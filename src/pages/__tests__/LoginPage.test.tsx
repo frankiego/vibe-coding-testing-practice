@@ -108,7 +108,7 @@ describe('LoginPage', () => {
         it('登入失敗處理', async () => {
             render(<LoginPage />);
 
-            const emailInput = screen.getByLabelText('電子郵');
+            const emailInput = screen.getByLabelText('電子郵件');
             const passwordInput = screen.getByLabelText('密碼');
             const submitButton = screen.getByRole('button', { name: '登入' });
 
