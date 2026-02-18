@@ -17,7 +17,7 @@ describe('LoginPage', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        
+
         // Setup default mock values
         (RouterDom.useNavigate as any).mockReturnValue(mockNavigate);
         (AuthContext.useAuth as any).mockReturnValue({
@@ -31,7 +31,7 @@ describe('LoginPage', () => {
     describe('【前端元素】', () => {
         it('檢查登入頁面元件渲染', () => {
             render(<LoginPage />);
-            
+
             expect(screen.getByText('歡迎回來')).toBeInTheDocument();
             expect(screen.getByLabelText('電子郵件')).toBeInTheDocument();
             expect(screen.getByLabelText('密碼')).toBeInTheDocument();
@@ -42,7 +42,7 @@ describe('LoginPage', () => {
     describe('【驗證邏輯】', () => {
         it('檢查 Email 格式驗證', () => {
             render(<LoginPage />);
-            
+
             const emailInput = screen.getByLabelText('電子郵件');
             const submitButton = screen.getByRole('button', { name: '登入' });
 
@@ -55,7 +55,7 @@ describe('LoginPage', () => {
 
         it('檢查密碼長度驗證', () => {
             render(<LoginPage />);
-            
+
             const passwordInput = screen.getByLabelText('密碼');
             const submitButton = screen.getByRole('button', { name: '登入' });
 
@@ -68,7 +68,7 @@ describe('LoginPage', () => {
 
         it('檢查密碼複雜度驗證', () => {
             render(<LoginPage />);
-            
+
             const passwordInput = screen.getByLabelText('密碼');
             const submitButton = screen.getByRole('button', { name: '登入' });
 
@@ -81,22 +81,22 @@ describe('LoginPage', () => {
             fireEvent.change(passwordInput, { target: { value: 'abcdefgh' } });
             fireEvent.click(submitButton);
             expect(screen.getByText('密碼必須包含英文字母和數字')).toBeInTheDocument();
-            
+
             expect(mockLogin).not.toHaveBeenCalled();
         });
 
         it('成功登入流程', async () => {
             render(<LoginPage />);
-            
+
             const emailInput = screen.getByLabelText('電子郵件');
             const passwordInput = screen.getByLabelText('密碼');
             const submitButton = screen.getByRole('button', { name: '登入' });
 
             fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
             fireEvent.change(passwordInput, { target: { value: 'password123' } });
-            
+
             mockLogin.mockResolvedValueOnce(undefined);
-            
+
             fireEvent.click(submitButton);
 
             await waitFor(() => {
@@ -107,21 +107,21 @@ describe('LoginPage', () => {
 
         it('登入失敗處理', async () => {
             render(<LoginPage />);
-            
-            const emailInput = screen.getByLabelText('電子郵件');
+
+            const emailInput = screen.getByLabelText('電子郵');
             const passwordInput = screen.getByLabelText('密碼');
             const submitButton = screen.getByRole('button', { name: '登入' });
 
             fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
             fireEvent.change(passwordInput, { target: { value: 'password123' } });
-            
+
             const errorMessage = '帳號或密碼錯誤';
             const errorObj = {
                 isAxiosError: true,
                 response: { data: { message: errorMessage } }
             };
             mockLogin.mockRejectedValueOnce(errorObj);
-            
+
             fireEvent.click(submitButton);
 
             await waitFor(() => {
@@ -133,22 +133,22 @@ describe('LoginPage', () => {
     describe('【UI 狀態】', () => {
         it('登入載入狀態', async () => {
             render(<LoginPage />);
-            
+
             const emailInput = screen.getByLabelText('電子郵件');
             const passwordInput = screen.getByLabelText('密碼');
             const submitButton = screen.getByRole('button', { name: '登入' });
 
             fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
             fireEvent.change(passwordInput, { target: { value: 'password123' } });
-            
+
             // Return a promise that doesn't resolve immediately
             mockLogin.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)));
-            
+
             fireEvent.click(submitButton);
 
             expect(submitButton).toBeDisabled();
             expect(screen.getByText('登入中...')).toBeInTheDocument();
-            
+
             await waitFor(() => {
                 expect(submitButton).not.toBeDisabled();
             });
